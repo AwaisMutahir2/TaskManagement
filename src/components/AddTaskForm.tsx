@@ -32,7 +32,7 @@ export default function AddTaskForm({ setToggleFetch }: AddTaskFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 p-6 bg-white rounded-lg shadow-md text-gray-800"
+      className="mb-6 p-6 bg-gray-100 shadow-xl rounded-lg border text-gray-800"
     >
       <h3 className="font-bold text-lg mb-4">Add New Task</h3>
 

@@ -119,10 +119,10 @@ export default function Task({ task, onUpdate }: TaskComponentProps) {
 
   return (
     <div
-      className={`border flex justify-between items-start p-6 rounded-lg shadow-lg ${
+      className={`flex justify-between items-start p-6 rounded-lg shadow-xl ${
         theme === "light"
-          ? "bg-gray-100 text-black"
-          : "bg-gray-800 text-gray-100"
+          ? "bg-gray-100 text-black hover:shadow-gray-500"
+          : "bg-gray-800 text-gray-100 hover:shadow-gray-700"
       } transition-all`}
     >
       <div>

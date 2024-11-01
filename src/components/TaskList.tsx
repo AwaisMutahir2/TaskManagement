@@ -66,7 +66,7 @@ const TaskList: React.FC<TaskListProps> = ({ toggleFetch }) => {
           <option value="title">Sort by Title</option>
         </select>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.map((task) => (
           <Task key={task._id} task={task} onUpdate={fetchTasks} />
         ))}

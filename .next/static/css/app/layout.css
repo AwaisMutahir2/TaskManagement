@@ -619,8 +619,8 @@ video {
 .cursor-pointer {
   cursor: pointer;
 }
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 .flex-col {
   flex-direction: column;
@@ -757,6 +757,12 @@ video {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+.pr-5 {
+  padding-right: 1.25rem;
+}
+.pr-8 {
+  padding-right: 2rem;
+}
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -823,6 +829,11 @@ video {
 .shadow-md {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.shadow-xl {
+  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .filter {
@@ -918,6 +929,16 @@ body {
   background-color: rgb(250 204 21 / var(--tw-bg-opacity));
 }
 
+.hover\:shadow-gray-500:hover {
+  --tw-shadow-color: #6b7280;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.hover\:shadow-gray-700:hover {
+  --tw-shadow-color: #374151;
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -950,8 +971,19 @@ body {
     margin-bottom: 0px;
   }
 
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .sm\:flex-row {
     flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

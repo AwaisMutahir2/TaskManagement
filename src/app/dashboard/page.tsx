@@ -10,7 +10,7 @@ export default function Dashboard() {
   const { theme } = useTheme();
   const [toggleFetch, setToggleFetch] = useState(0);
   return (
-    <div className={`p-4 px-10 ${theme === "light" && "bg-white text-black"}`}>
+    <div className={`p-4 px-10 min-h-screen ${theme === "light" && "bg-white text-black"}`}>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Task Dashboard</h1>
         <div className="flex gap-x-4">
