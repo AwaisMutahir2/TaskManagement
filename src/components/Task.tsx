@@ -2,6 +2,7 @@
 
 import { useTheme } from "@/contexts/ThemeContext";
 import axiosInstance from "@/lib/axiosInstance";
+import { deleteTask, updateTask, updateTaskStatus } from "@/services/taskServices";
 import { useState } from "react";
 import { MdModeEdit, MdDelete } from "react-icons/md";
 
@@ -28,8 +29,7 @@ export default function Task({ task, onUpdate }: TaskComponentProps) {
   const handleUpdate = async () => {
     setIsLoading(true);
     try {
-      const res = await axiosInstance.put(`/tasks/${task._id}`, editedTask);
-
+      await updateTask(task._id, editedTask);
       setIsEditing(false);
       onUpdate();
     } catch (error) {
@@ -42,10 +42,7 @@ export default function Task({ task, onUpdate }: TaskComponentProps) {
   const handleStatusUpdate = async (completed: boolean) => {
     setIsLoading(true);
     try {
-      const res = await axiosInstance.patch(`/tasks/${task._id}`, {
-        completed,
-      });
-
+      await updateTaskStatus(task._id, completed);
       onUpdate();
     } catch (error) {
       console.error(error);
@@ -56,8 +53,7 @@ export default function Task({ task, onUpdate }: TaskComponentProps) {
 
   const handleDelete = async () => {
     try {
-      const res = await axiosInstance.delete(`/tasks/${task._id}`);
-
+      await deleteTask(task._id);
       onUpdate();
     } catch (error) {
       console.error(error);

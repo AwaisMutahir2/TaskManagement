@@ -2,7 +2,7 @@
 
 import axiosInstance from "@/lib/axiosInstance";
 import { useState } from "react";
-
+import { createTask } from "@/services/taskServices";
 interface AddTaskFormProps {
   setToggleFetch: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -15,11 +15,7 @@ export default function AddTaskForm({ setToggleFetch }: AddTaskFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post("/tasks", {
-        title,
-        description,
-        dueDate,
-      });
+      await createTask({ title, description, dueDate });
       setTitle("");
       setDescription("");
       setDueDate("");

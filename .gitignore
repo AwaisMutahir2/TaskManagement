@@ -7,6 +7,8 @@ node_modules/
 
 # Next.js build output
 .next/
+.next
+next
 out/
 
 # Tailwind CSS build output (if applicable)
@@ -18,6 +20,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 turbo.log
+
+./.next
 
 # MacOS files
 .DS_Store
