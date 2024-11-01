@@ -1,69 +1,105 @@
-import { createMocks, MockRequest, MockResponse } from "node-mocks-http";
-import { GET, POST } from "@/app/api/tasks/route";
-import dbConnect from "@/lib/db";
-import Task from "@/models/Task";
-import User, { IUser } from "@/models/User";
-import jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { PUT, DELETE } from "@/app/api/tasks/[id]/route"; 
+import dbConnect from '@/lib/db';
+import Task from '@/models/Task';
+import { verifyToken } from '@/lib/auth';
 
-jest.mock("@/lib/db");
-jest.mock("next-auth/next");
+// Mock the necessary modules
+jest.mock('@/lib/db');
+jest.mock('@/models/Task');
+jest.mock('@/lib/auth');
 
-describe("Tasks API", () => {
-  let user: IUser;
-  let token: string;
+const mockCookies = jest.fn();
+jest.mock('next/headers', () => ({
+  cookies: () => ({
+    get: (name: string) => {
+      if (name === 'token') {
+        return { value: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzI0N2UyNmYxMTAxMGJlZGMyYWJlYjMiLCJpYXQiOjE3MzA0ODAyNTQsImV4cCI6MTczMDQ4Mzg1NH0.iGhtuSbDXrxmGFAKdkTepn5po6lDJ98imQNk7x9YXUM' }; // Simulate a valid token
+      }
+      return null;
+    },
+  }),
+}));
 
-  beforeAll(async () => {
-    await dbConnect();
-    user = await User.create({
-      email: "test@example.com",
-      password: "password",
-    });
-    token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!);
+describe('Task API', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  beforeAll(() => {
+    jest.clearAllMocks();
   });
 
-  afterAll(async () => {
-    await User.deleteMany({});
-    await Task.deleteMany({});
+  describe('PUT /api/task/[id]', () => {
+    it('should update a task successfully', async () => {
+      const req = new Request('http://localhost/api/tasks/123', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Updated Task',
+          description: 'Updated Description',
+          dueDate: new Date().toISOString(),
+          completed: false,
+        }),
+      });
+
+      (verifyToken as jest.Mock).mockResolvedValue({ userId: 'user123' });
+      (Task.findOneAndUpdate as jest.Mock).mockResolvedValue({
+        _id: '123',
+        title: 'Updated Task',
+        description: 'Updated Description',
+        dueDate: new Date(),
+        completed: false,
+      });
+
+      const response = await PUT(req, { params: { id: '123' } });
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data).toEqual({
+        _id: '123',
+        title: 'Updated Task',
+        description: 'Updated Description',
+        dueDate: expect.any(String), // Ensure this matches your format
+        completed: false,
+      });
+    });
+
+    it('should return 404 if task is not found', async () => {
+      const req = new Request('http://localhost/api/tasks/123', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: 'Non-existent Task' }),
+      });
+
+      (verifyToken as jest.Mock).mockResolvedValue({ userId: 'user123' });
+      (Task.findOneAndUpdate as jest.Mock).mockResolvedValue(null);
+
+      const response = await PUT(req, { params: { id: '123' } });
+      const data = await response.json();
+
+      expect(response.status).toBe(404);
+      expect(data).toEqual({ error: 'Task not found' });
+    });
   });
 
-  it("should create a new task", async () => {
-    const { req, res }: { req: MockRequest<any>; res: MockResponse<any> } = createMocks({
-      method: "POST",
-      body: {
-        title: "Test Task",
-        description: "This is a test task",
-        dueDate: new Date().toISOString(),
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  describe('DELETE /api/task/[id]', () => {
+    it('should delete a task successfully', async () => {
+      const req = new Request('http://localhost/api/tasks/123', {
+        method: 'DELETE',
+        headers: { 'Cookie': 'token=valid-token' },
+      });
+
+      (verifyToken as jest.Mock).mockResolvedValue({ userId: 'user123' });
+      (Task.findOneAndDelete as jest.Mock).mockResolvedValue({
+        _id: '123',
+        title: 'Task to be deleted',
+      });
+
+      const response = await DELETE(req, { params: { id: '123' } });
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data).toEqual({ message: 'Task deleted successfully' });
     });
-
-    await POST(req);
-
-    expect(res._getStatusCode()).toBe(201);
-    expect(JSON.parse(res._getData())).toHaveProperty("_id");
-  });
-
-  it("should get tasks for a user", async () => {
-    await Task.create({
-      title: "Test Task",
-      description: "This is a test task",
-      dueDate: new Date(),
-      user: user._id,
-    });
-
-    const { req, res }: { req: MockRequest<any>; res: MockResponse<any> } = createMocks({
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    await GET(req);
-
-    expect(res._getStatusCode()).toBe(200);
-    expect(JSON.parse(res._getData())).toHaveProperty("tasks");
-    expect(JSON.parse(res._getData()).tasks.length).toBeGreaterThan(0);
   });
 });
